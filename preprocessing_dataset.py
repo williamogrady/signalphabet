@@ -16,7 +16,7 @@ data = []
 labels = []
 
 counter_dict = {} # key: letter, value: number of images where no handlandmarks are detected
-num_img = 100  # Desired number of images  per letter 
+num_img = 500  # Desired number of images per letter/label 
 
 # looping through folders of the different letters,
 # then through each image in that folder
@@ -56,7 +56,7 @@ for dir_ in os.listdir(DATA_DIR):
                 counter_dict[dir_]+=1
 
 # Saving the data in a pickle file
-f = open('data.pickle', 'wb')
+f = open('data_.pickle', 'wb')
 pickle.dump({'data': data, 'labels': labels}, f)  # data: list of lists with coordinates of all landmarks per picture
 f.close()
 
@@ -65,3 +65,6 @@ print("Number of images where hand is incorrecly detected or not detected at all
 for key, value in counter_dict.items():
     print(key + ":" + str(value))
 
+
+# Datasets:
+# data.pickle --> 500 images/letter

@@ -21,3 +21,15 @@ model.fit(x_train, y_train)
 y_predict = model.predict(x_test)
 score = accuracy_score(y_predict, y_test)
 print("{}% of samples were classified correctly".format(score*100))
+
+# Save model
+f = open('model_rf_.p', 'wb')
+pickle.dump({'model': model}, f)
+f.close()
+
+# Model performace:
+
+# model_rf_500.p   RandomForest with dataset of 500 images/letter
+# 99.15384615384616% of samples were classified correctly
+
+#

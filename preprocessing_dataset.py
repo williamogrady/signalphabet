@@ -1,6 +1,6 @@
 import os  # for using operating system-dependent functionality, such as directories and files
 import pickle  # for storing the trained ML-model
-
+import random
 import mediapipe as mp
 import cv2 
 
@@ -24,7 +24,10 @@ for dir_ in os.listdir(DATA_DIR):
     print(dir_)
     counter_dict[dir_] = 0
     detected_num = 0
-    for img_path in os.listdir(os.path.join(DATA_DIR, dir_)):
+    letter_list = os.listdir(os.path.join(DATA_DIR, dir_))
+    random.shuffle(letter_list)                        
+    #Shuffle list of images before split
+    for img_path in letter_list:
         if detected_num >= num_img:  # collect data from the XXX first pictures where 42 handlandmarks are detected 
             break
         else:
@@ -56,7 +59,7 @@ for dir_ in os.listdir(DATA_DIR):
                 counter_dict[dir_]+=1
 
 # Saving the data in a pickle file
-f = open('data_.pickle', 'wb')
+f = open('data_rf_500_shuffled.pickle', 'wb')
 pickle.dump({'data': data, 'labels': labels}, f)  # data: list of lists with coordinates of all landmarks per picture
 f.close()
 
@@ -68,3 +71,4 @@ for key, value in counter_dict.items():
 
 # Datasets:
 # data.pickle --> 500 images/letter
+# data_rf_500_shuffled.pickle --> 500 images/letters shuffled

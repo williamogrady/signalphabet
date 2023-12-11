@@ -1,6 +1,10 @@
-from tkinter import *
+import customtkinter as tk
+from tkinter import ttk
 import cv2 
 from PIL import Image, ImageTk 
+
+
+img = cv2.imread("a-sign.png", cv2.IMREAD_ANYCOLOR)
   
 vid = cv2.VideoCapture(0) # Define a video capture object 
   
@@ -10,14 +14,20 @@ vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)  # Set the width and height
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height) 
   
 
-app = Tk() # Create a GUI app 
+app = tk.CTk() # Create a GUI app 
   
 
 app.bind('<Escape>', lambda e: app.quit())  # Bind the app with Escape keyboard to quit app whenever pressed 
-  
 
-label_widget = Label(app) # Create a label and display it on app 
-label_widget.pack() 
+app.grid_columnconfigure(0, weight = 1)
+app.grid_columnconfigure(1, weight = 1)
+app.grid_rowconfigure(0, weight = 1)
+
+diddly = tk.CTkFrame(app, width = 10, height = 100, bg_color="red")
+diddly.grid(row=0, column=1, sticky="nsew")
+
+label_widget = tk.CTkLabel(app) # Create a label and display it on app 
+label_widget.grid(row=0, column=0) 
   
 # Create a function to open camera and 
 # display it in the label_widget on app 
@@ -47,8 +57,20 @@ def open_camera():
   
   
 # Create a button to open the camera in GUI app 
-button1 = Button(app, text="Open Camera", command=open_camera) 
-button1.pack() 
+button1 = tk.CTkButton(app, text="Open Camera", command=open_camera) 
+button1.grid(row=0, column=0) 
+
+text = tk.CTkLabel(app, text="Do this")
+text.grid(row=0, column=1)
+
+image = Image.open("interface/testpicture.png").resize((400, 400))
+bing = ImageTk.PhotoImage(image)
+
+label = ttk.Label(app, image=bing)
+label.grid(row=0, column=1)
+
+#picture= tk.CTkImage(app, light_image = img)
+#picture.grid(row=0, column=1)
   
 # Create an infinite loop for displaying app on screen 
 app.mainloop() 

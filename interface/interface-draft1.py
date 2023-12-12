@@ -14,8 +14,7 @@ root.title("Sign Alphabet")
 root.geometry("1200x800")
 root.bind('<Escape>', lambda e: root.quit())  # Bind the app with Escape keyboard to quit app whenever pressed 
 
-_, frame = vid.read()
-print(_)
+_, frame = vid.read() # Positional arguments: boolean, matrix of information
 
 root.grid_columnconfigure(0, weight = 1)
 root.grid_columnconfigure(1, weight = 1)

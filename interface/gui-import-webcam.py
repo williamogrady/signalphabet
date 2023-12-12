@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 img = cv2.imread("a-sign.png", cv2.IMREAD_ANYCOLOR)
   
 vid = cv2.VideoCapture(0) # Define a video capture object 
+
   
 width, height = 800, 600 # Declare the width and height in variables 
   
@@ -15,16 +16,24 @@ vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
   
 
 app = tk.CTk() # Create a GUI app 
-  
+app.geometry("1200x800")
 
 app.bind('<Escape>', lambda e: app.quit())  # Bind the app with Escape keyboard to quit app whenever pressed 
 
 app.grid_columnconfigure(0, weight = 1)
 app.grid_columnconfigure(1, weight = 1)
 app.grid_rowconfigure(0, weight = 1)
+app.grid_rowconfigure(1, weight = 1)
 
-diddly = tk.CTkFrame(app, width = 10, height = 100, bg_color="red")
-diddly.grid(row=0, column=1, sticky="nsew")
+
+
+
+#rightframe = tk.CTkFrame(app)
+
+#rightframe.grid_columnconfigure(0, weight = 1)
+#rightframe.grid_rowconfigure(0, weight = 1)
+#rightframe.grid_rowconfigure(1, weight = 1)
+
 
 label_widget = tk.CTkLabel(app) # Create a label and display it on app 
 label_widget.grid(row=0, column=0) 
@@ -56,9 +65,8 @@ def open_camera():
     label_widget.after(10, open_camera) 
   
   
-# Create a button to open the camera in GUI app 
-button1 = tk.CTkButton(app, text="Open Camera", command=open_camera) 
-button1.grid(row=0, column=0) 
+# Show the fucking camera
+open_camera()
 
 text = tk.CTkLabel(app, text="Do this")
 text.grid(row=0, column=1)
@@ -67,7 +75,8 @@ image = Image.open("interface/testpicture.png").resize((400, 400))
 bing = ImageTk.PhotoImage(image)
 
 label = ttk.Label(app, image=bing)
-label.grid(row=0, column=1)
+label.grid(row=1, column=1)
+
 
 #picture= tk.CTkImage(app, light_image = img)
 #picture.grid(row=0, column=1)

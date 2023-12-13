@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageTk 
 
 
 LARGEFONT =("Verdana", 35)
@@ -11,7 +12,7 @@ class tkinterApp(tk.Tk):
 		
 		# __init__ function for class Tk
 		tk.Tk.__init__(self, *args, **kwargs)
-		
+
 		# creating a container
 		container = tk.Frame(self) 
 		self.geometry("1200x900")
@@ -43,6 +44,28 @@ class tkinterApp(tk.Tk):
 	def show_frame(self, cont):
 		frame = self.frames[cont]
 		frame.tkraise()
+
+	def open_camera(): 
+    # Capture the video frame by frame 
+    _, frame = vid.read() 
+  
+    # Convert image from one color space to other 
+    opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA) 
+  
+    # Capture the latest frame and transform to image 
+    captured_image = Image.fromarray(opencv_image) 
+  
+    # Convert captured image to photoimage 
+    photo_image = ImageTk.PhotoImage(image=captured_image) 
+  
+    # Displaying photoimage in the label 
+    label_widget.photo_image = photo_image 
+  
+    # Configure image in the label 
+    label_widget.configure(image=photo_image) 
+  
+    # Repeat the same process after every 10 seconds 
+    label_widget.after(10, open_camera) 
 
 # first window frame startpage
 

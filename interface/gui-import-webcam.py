@@ -65,7 +65,7 @@ def open_camera():
     label_widget.after(10, open_camera) 
   
   
-# Show the fucking camera
+# Show cam
 open_camera()
 
 text = tk.CTkLabel(app, text="Do this")

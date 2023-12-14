@@ -3,51 +3,34 @@ from tkinter import ttk
 import cv2
 from PIL import Image, ImageTk 
 
-
-
-        
 class tkinterApp(tk.Tk):
     
-    # __init__ function for class tkinterApp 
+  
     def __init__(self, *args, **kwargs): 
-        
-        # __init__ function for class Tk
         tk.Tk.__init__(self, *args, **kwargs)
 
-        # creating a container
         container = tk.Frame(self) 
         self.geometry("1200x900")
         container.pack(side = "top", fill = "both", expand = True) 
         container.grid_rowconfigure(0, weight = 1)
         container.grid_columnconfigure(0, weight = 1)
 
-        # initializing frames to an empty array
+
         self.frames = {} 
 
-        # iterating through a tuple consisting
-        # of the different page layouts
+ 
         for F in (StartPage, AlphabetPage):
 
-            frame = F(container, self)
+            frame = F(container, self)  
 
-            # initializing frame of that object from
-            # startpage, page1, page2 respectively with 
-            # for loop
             self.frames[F] = frame 
 
-            #frame.grid(row = 0, column = 0, sticky ="nsew")
-
-        
         self.show_frame(StartPage)
 
-        
-    
-    # to display the current frame passed as
-    # parameter
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
-        
+    """  
     def open_camera(self, vid, widget):
         _, frame = vid.read() 
         opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA) 
@@ -56,14 +39,12 @@ class tkinterApp(tk.Tk):
         widget.photo_image = photo_image 
         widget.configure(image=photo_image) 
         widget.after(10, self.open_camera) 
-        
-
-
-
+        """ 
 
 class StartPage(tkinterApp, tk.Frame):
     def __init__(self, parent, controller): 
         tk.Frame.__init__(self, parent)
+        
         self.columnconfigure(0, weight = 5)
         self.columnconfigure(1, weight = 1)
         self.columnconfigure(2, weight = 5)
@@ -90,11 +71,11 @@ class StartPage(tkinterApp, tk.Frame):
         bluebutton = ttk.Button(self, text ="Blue", command = lambda : controller.show_frame(AlphabetPage))
         bluebutton.grid(row=3, column=2, sticky="news")
         
-        vid = cv2.VideoCapture(0)
-        label_widget = tk.Label(self) # Create a label and display it on app 
-        label_widget.grid(column=0) 
+        #vid = cv2.VideoCapture(0)
+        #label_widget = tk.Label(self)
+        #label_widget.grid(row=0, column=0) 
 
-        self.open_camera(vid, label_widget)
+        #tkinterApp.open_camera(self, vid, label_widget)
 
 
 class AlphabetPage(tkinterApp, tk.Frame):

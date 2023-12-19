@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 
 app = tk.Tk()
-app.geometry("1000x700")
+app.geometry("1200x900")
 
 app.columnconfigure(0, weight = 5)
 app.columnconfigure(1, weight = 1)

@@ -1,4 +1,4 @@
-import customtkinter as tk
+import tkinter as tk
 from tkinter import ttk
 import cv2 
 from PIL import Image, ImageTk 
@@ -15,7 +15,7 @@ vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)  # Set the width and height
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height) 
   
 
-app = tk.CTk() # Create a GUI app 
+app = tk.Tk() # Create a GUI app 
 app.geometry("1200x800")
 
 app.bind('<Escape>', lambda e: app.quit())  # Bind the app with Escape keyboard to quit app whenever pressed 
@@ -35,7 +35,7 @@ app.grid_rowconfigure(1, weight = 1)
 #rightframe.grid_rowconfigure(1, weight = 1)
 
 
-label_widget = tk.CTkLabel(app) # Create a label and display it on app 
+label_widget = tk.Label(app) # Create a label and display it on app 
 label_widget.grid(row=0, column=0) 
   
 # Create a function to open camera and 
@@ -68,7 +68,7 @@ def open_camera():
 # Show cam
 open_camera()
 
-text = tk.CTkLabel(app, text="Do this")
+text = tk.Label(app, text="Do this")
 text.grid(row=0, column=1)
 
 image = Image.open("interface/testpicture.png").resize((400, 400))

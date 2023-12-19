@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 import cv2
-from PIL import Image, ImageTk
 import numpy as np
+from PIL import Image, ImageTk
 
 class App:
     def __init__(self, master):
@@ -16,56 +16,43 @@ class App:
 
         self.frame1 = Frame(self.master)
         self.frame1.grid_rowconfigure(0, weight=1)
-        self.frame1.grid_columnconfigure(0, weight=5)
+        self.frame1.grid_columnconfigure(0, weight=7)
         self.frame1.grid_columnconfigure(1, weight=1)
-        self.frame1.grid_columnconfigure(2, weight=3)
-        self.frame1.grid_columnconfigure(3, weight=1)
 
-        frame_text_left = Frame(self.frame1, bg="red")
-        frame_text_middle = Frame(self.frame1, bg="yellow")
-        frame_text_right = Frame(self.frame1, bg="blue")
-        frame_text_explanations = Frame(self.frame1, bg="purple")
-        frame_picture = Frame(self.frame1, bg="lightblue")
-        frame_text_bottom_right = Frame(self.frame1, bg="black")
+        self.reg_txt = ttk.Label(self.frame1, text='login')
+        self.reg_txt.grid(row=0, column=0, sticky="w", pady=10)
 
-        frame_text_left.grid(row=0, column=1, sticky="news")
-        frame_text_middle.grid(row=0, column=2, sticky="news")
-        frame_text_right.grid(row=0, column=3, sticky="news")
-        frame_text_explanations.grid(row=1, column=2, sticky="news")
-        frame_picture.grid(row=2, column=2, sticky="news")
-        frame_text_bottom_right.grid(row=3, column=2, sticky="news")
+        self.practice_btn = ttk.Button(self.frame1, text="Go to Alphabet Page", command=self.alphabet_page)
+        self.practice_btn.grid(row=1, column=0, sticky="w", pady=10)
+
+        self.label_widget = Label(self.frame1)
+        self.label_widget.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="nsew")
 
         self.vid = cv2.VideoCapture(0)
-        self.show_frame(frame_picture)
+        self.show_frame()
 
         self.frame1.pack(expand=True, fill="both")
 
-    def show_frame(self, frame_widget):
+    def show_frame(self):
         ret, frame = self.vid.read()
 
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # Get the dimensions of the frame widget
-            frame_width = frame_widget.winfo_width()
-            frame_height = frame_widget.winfo_height()
+            # Get the dimensions of the label widget
+            label_width = self.label_widget.winfo_width()
+            label_height = self.label_widget.winfo_height()
 
-            # Adjust the target dimensions to fit the frame widget
-            target_width = frame_width
-            target_height = frame_width * frame.shape[0] // frame.shape[1]
-
-            # Crop and resize the frame to fill the frame widget
-            frame = self.crop_and_resize(frame, target_width, target_height)
+            # Crop and resize the frame to fill the label widget
+            frame = self.crop_and_resize(frame, label_width, label_height)
 
             img = Image.fromarray(frame)
             imgtk = ImageTk.PhotoImage(image=img)
 
-            label_widget = Label(frame_widget, image=imgtk)
-            label_widget.imgtk = imgtk
-            label_widget.config(image=imgtk)
-            label_widget.pack(fill="both", expand=True)
+            self.label_widget.imgtk = imgtk
+            self.label_widget.config(image=imgtk)
 
-            label_widget.after(10, lambda: self.show_frame(frame_widget))
+            self.label_widget.after(10, self.show_frame)
         else:
             print("Failed to capture frame.")
 
@@ -91,10 +78,12 @@ class App:
 
             return resized_frame
         else:
-            # If the cropping box is invalid, resize the entire frame to the target dimensions
-            resized_frame = cv2.resize(frame, (max(target_width, 1), max(target_height, 1)))
-            return resized_frame
+            # Return an empty black frame if the cropping box is invalid
+            return np.zeros((target_height, target_width, 3), dtype=np.uint8)
 
+    def alphabet_page(self):
+        # Add functionality for transitioning to the alphabet page
+        pass
 
 if __name__ == "__main__":
     root = Tk()

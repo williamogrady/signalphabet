@@ -6,7 +6,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.geometry("1200x900")
-        self.title("Camera Application")
+        self.title("Sign Alphabet")
         
         # Create a frame for the camera recording area
         self.camera_frame = tk.Frame(self, width=640, height=480)
@@ -16,9 +16,14 @@ class Application(tk.Tk):
         self.log_frame = tk.Frame(self, width=200, height=480)
         self.log_frame.pack(side=tk.RIGHT, padx=10, pady=10)
 
+        self.log_frame2 = tk.Frame(self, width=200, height=480)
+        self.log_frame2.pack(side=tk.RIGHT, padx=10, pady=10)
+
         button =tk.Button(self.log_frame, text = "Gridddd")
         button.pack()
-        button.grid(row=0,column=1)
+
+        button2 = tk.Button(self.log_frame2, text ="Testest")
+        button2.grid(row=1,column=1)
 
         
         # Create a label to display the camera feed

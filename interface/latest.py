@@ -16,14 +16,12 @@ class Application(tk.Tk):
         self.log_frame = tk.Frame(self, width=200, height=480)
         self.log_frame.pack(side=tk.RIGHT, padx=10, pady=10)
 
-        self.log_frame2 = tk.Frame(self, width=200, height=480)
-        self.log_frame2.pack(side=tk.RIGHT, padx=10, pady=10)
-
-        button =tk.Button(self.log_frame, text = "Gridddd")
-        button.pack()
-
-        button2 = tk.Button(self.log_frame2, text ="Testest")
-        button2.grid(row=1,column=1)
+        b = tk.Button(self.log_frame, text = "1", bg = "red")
+        b.grid(row=1, column=3)
+        b2 =tk.Button(self.log_frame, text = "2")
+        b2.grid(row=1, column=4)
+        b3 = tk.Button(self.log_frame, text = "2")
+        b3.grid(row=2, column=0)
 
         
         # Create a label to display the camera feed

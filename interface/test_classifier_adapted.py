@@ -11,7 +11,7 @@ def load_model(filepath): # call with variable "./model_rf_500_shuffled.p"
 
 def handle_landmarks(rgb_frame, mp_drawing, frame, data_aux, x_, y_):
     # Draw landmarks:
-    for hand_landmarks in rgb_frame.multi_hand_landmarks:
+    for hand_landmarks in frame.multi_hand_landmarks:
         mp_drawing.draw_landmarks(
             frame, 
             hand_landmarks, 
@@ -89,7 +89,6 @@ if __name__ == "__main__":
 
     cap.release() 
     cv2.destroy()
-
 
 
 

@@ -60,7 +60,7 @@ def predict_letter(model, data, predictions_list):
         if max(set(predictions_list), key = predictions_list.count) == predictions_list[-1]:
             #cv2.putText(frame_flipped, predictions_list[-1], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0,0,0), 3, cv2.LINE_AA)
             return predictions_list[-1]
-
+ 
     except ValueError:
         predictions_list.append("")
         predictions_list.pop(0)

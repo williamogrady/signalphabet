@@ -5,9 +5,7 @@ import cv2
 from PIL import Image, ImageTk
 import mediapipe as mp
 import numpy as np
-import pickle
 from test_classifier_adapted import *
-import time
 
 
 class Application(tk.Tk):
@@ -20,16 +18,16 @@ class Application(tk.Tk):
 
         self.ret = ""
         self.frame = ""
-        self.hands = None
-        self.model = None
-        self.mp_drawing = ""
-        self.mp_drawing_styles = ""
+        self.model = load_model("./model_rf_500_shuffled.p")  #("./model_ElinMatilda500_rf.pickle")
+        self.mp_hands = mp.solutions.hands
+        self.hand_detection_model = self.mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+        self.mp_drawing = mp.solutions.drawing_utils
+        self.mp_drawing_styles = mp.solutions.drawing_styles
         self.pressed_back = False
 
         self.camera_page()
         self.start_camera()
-        self.show_start_page()
-        self.load_models("./model_rf_500_shuffled.p")  #("./model_ElinMatilda500_rf.pickle")
+        self.show_start_page()  
         
 
         self.predictions_list = ["","","","","","","",""]
@@ -114,7 +112,7 @@ class Application(tk.Tk):
 
 
     def show_practice_page(self, selected_letter):
-        self.pressed_back = False
+        #self.pressed_back = False
         if self.current_page:
             self.current_page.destroy()
 
@@ -134,9 +132,8 @@ class Application(tk.Tk):
         label = tk.Label(self.current_page, text=label_text, font=("FOT-RodinNTLG Pro DB", 16))
         label.grid(row=0, column=0, columnspan=5, pady=(0, 10))
 
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", command=self.change_state_back_btn)
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", command=self.show_alphabet_page) #change_state_back_btn
         go_back_button.grid(row=1, column=0, columnspan=5, pady=(200, 0))
-        print("before loop")
 
         self.classify_sign(selected_letter)
 
@@ -152,26 +149,42 @@ class Application(tk.Tk):
             self.destroy()
 
     def classify_sign(self, letter):
-        print("in classify")
         data_aux = []
-        x_ = []
-        y_ = []
+        #x_ = []
+        #y_ = []
 
         ret = self.ret
         frame = self.frame
+        #print(type(self.frame))
+        #print(frame)
 
-        H, W, _ = frame.shape
-        print(type(self.frame))
-        print(frame)
-        frame_rgb = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # converting to rgb for usage with mediapipe     
-        results = self.hands.process(frame_rgb)
-        print(type(results))
-        print(results)
+        #H, W, _ = frame.shape
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # converting to rgb for usage with mediapipe     
+        results = self.hand_detection_model.process(frame_rgb)
+        #print(type(results))
+        #print(results)
         
-        if results.multi_hand_landmarks:  # if landmarks of a hand is found, plot and store them
-            handle_landmarks(frame_rgb, self.mp_drawing, results, data_aux, x_, y_)
+        if results.multi_hand_landmarks:  # if landmarks of a hand is found, display and store them
+            #handle_landmarks(frame_rgb, self.mp_drawing, results,data_aux, x_, y_)
+            for hand_landmarks in results.multi_hand_landmarks:
+                self.mp_drawing.draw_landmarks(
+                    frame, 
+                    hand_landmarks, 
+                    self.hand_detection_model.HAND_CONNECTIONS, 
+                    self.mp_drawing_styles.get_default_hand_landmarks_style(), 
+                    self.mp_drawing_styles.get_default_hand_connections_style())
+            # Store landmark coordinates:       
+            for hand_landmarks in results.multi_hand_landmarks:
+                for i in range(len(hand_landmarks.landmark)):
+                    x = hand_landmarks.landmark[i].x
+                    y = hand_landmarks.landmark[i].y
+                    data_aux.append(x)
+                    data_aux.append(y)
+                    #x_.append(x)
+                    #y_.append(y)
             #x1, y1, x2, y2 = find_hand_rectangle(x_, y_)
-            predicted_letter = predict_letter(self.model, data_aux)
+            predicted_letter = predict_letter(self.model, data_aux, self.predictions_list)
 
             # Show frame with landmarks and predicted letter
             #cv2.rectangle(frame_flipped,(x1, y1), (x2, y2), (0,0,0), 4)
@@ -182,16 +195,6 @@ class Application(tk.Tk):
         else:
             print(":(") 
 
-
-    def load_models(self, model_path):
-        self.model = load_model(model_path)
-
-        mp_hands = mp.solutions.hands
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_drawing_styles = mp.solutions.drawing_styles
-
-        # Defining hand detection model
-        self.hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 if __name__ == "__main__":
     app = Application()

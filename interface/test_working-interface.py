@@ -19,17 +19,18 @@ class Application(tk.Tk):
 
         self.ret = ""
         self.frame = ""
-        self.model = load_model("./model_rf_500_shuffled.p")  #("./model_ElinMatilda500_rf.pickle")
+        self.model = load_model("./model_ElinMatilda500_rf.pickle")
         self.mp_hands = mp.solutions.hands
         self.hand_detection_model = self.mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.on_practice_page = False
 
-        self.x1=0
-        self.y1=0 
-        self.x2=0 
-        self.y2=0
+        self.x1=None
+        self.y1=None 
+        self.x2=None 
+        self.y2=None
+        self.correct_sign = False
 
         self.camera_page()
         self.start_camera()
@@ -38,7 +39,6 @@ class Application(tk.Tk):
 
         self.predictions_list = ["","","","","","","",""] 
         self.selected_letter = ""
-        self.correct_sign = False
 
     def camera_page(self):
         self.camera_frame = tk.Frame(self, width=600, height=900)
@@ -55,8 +55,8 @@ class Application(tk.Tk):
     def update_camera(self):
         ret, frame = self.cap.read()
         frame_flipped = cv2.flip(frame, 1)  # flipping frames to display as mirrored
-        #TODO fix function and if-statement
-        cv2.rectangle(frame_flipped, (self.x1, self.y1), (self.x2, self.y2), (0,0,0), 4)  
+        if (self.x1, self.y1, self.x2, self.y2):                   
+            draw_hand_rectangle(frame_flipped, self.x1, self.y1, self.x2, self.y2, self.correct_sign)
         self.ret = ret
         self.frame = frame_flipped
 
@@ -73,7 +73,6 @@ class Application(tk.Tk):
 
         self.after(25, self.update_camera)
         
-
 
     def show_start_page(self):
         if self.current_page:
@@ -226,6 +225,8 @@ class Application(tk.Tk):
 
         #cv2.imshow("frame", self.frame)
         #cv2.waitKey(25)
+        else:
+            self.x1, self.y1, self.x2, self.y2 = (None,None,None,None)
 
         if self.on_practice_page==True:
             self.after(25, self.classify_sign, letter)

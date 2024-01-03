@@ -65,6 +65,12 @@ def predict_letter(model, data, predictions_list):
         predictions_list.append("")
         predictions_list.pop(0)
 
+def draw_hand_rectangle(frame_flipped, x1, y1, x2, y2, correct_sign):
+    if correct_sign:
+        cv2.rectangle(frame_flipped, (x1, y1), (x2, y2), (0,255,0), 4)
+    else:
+        cv2.rectangle(frame_flipped, (x1, y1), (x2, y2), (0,0,0), 4)
+
         
 if __name__ == "__main__":
 

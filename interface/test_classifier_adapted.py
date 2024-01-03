@@ -28,7 +28,7 @@ def handle_landmarks(detected_hand, mp_drawing, mp_hands, mp_drawing_styles, dat
             x_.append(x)
             y_.append(y)
 
-def find_hand_rectangle(x_, y_):
+def find_hand_rectangle(x_, y_, H, W):
     # Finding corners for rectangle around hand
     x1 = int(min(x_)*W)
     y1 = int(min(y_)*H)

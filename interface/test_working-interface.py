@@ -26,6 +26,11 @@ class Application(tk.Tk):
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.on_practice_page = False
 
+        self.x1=0
+        self.y1=0 
+        self.x2=0 
+        self.y2=0
+
         self.camera_page()
         self.start_camera()
         self.show_start_page()  
@@ -50,6 +55,8 @@ class Application(tk.Tk):
     def update_camera(self):
         ret, frame = self.cap.read()
         frame_flipped = cv2.flip(frame, 1)  # flipping frames to display as mirrored
+        #TODO fix function and if-statement
+        cv2.rectangle(frame_flipped, (self.x1, self.y1), (self.x2, self.y2), (0,0,0), 4)  
         self.ret = ret
         self.frame = frame_flipped
 
@@ -61,6 +68,7 @@ class Application(tk.Tk):
 
             self.camera_label.configure(image=photo)
             self.camera_label.image = photo
+            self.camera_label.pack()
 
 
         self.after(25, self.update_camera)
@@ -174,13 +182,13 @@ class Application(tk.Tk):
 
     def classify_sign(self, letter):
         data_aux = []
-        #x_ = []
-        #y_ = []
+        self.x_ = []
+        self.y_ = []
 
         ret = self.ret
         frame = self.frame
 
-        #H, W, _ = frame.shape
+        self.H, self.W, _ = frame.shape
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # converting to rgb for usage with mediapipe     
         results = self.hand_detection_model.process(frame_rgb)
@@ -202,13 +210,13 @@ class Application(tk.Tk):
                     y = hand_landmarks.landmark[i].y
                     data_aux.append(x)
                     data_aux.append(y)
-                    #x_.append(x)
-                    #y_.append(y)
-            #x1, y1, x2, y2 = find_hand_rectangle(x_, y_)
+                    self.x_.append(x)
+                    self.y_.append(y)
+            self.x1, self.y1, self.x2, self.y2 = find_hand_rectangle(self.x_, self.y_, self.H, self.W)
             predicted_letter = predict_letter(self.model, data_aux, self.predictions_list)
 
             # Show frame with landmarks and predicted letter
-            #cv2.rectangle(frame_flipped,(x1, y1), (x2, y2), (0,0,0), 4)
+            #cv2.rectangle(self.frame,(x1, y1), (x2, y2), (0,0,0), 4)
            
             #print("Prediction:"+str(predicted_letter))
             #print(self.predictions_list)
@@ -216,7 +224,7 @@ class Application(tk.Tk):
             self.correct_sign = self.is_sign_correct(letter, predicted_letter)
             #print("Attribut:" + str(self.correct_sign))
 
-        #cv2.imshow("frame", frame_flipped)
+        #cv2.imshow("frame", self.frame)
         #cv2.waitKey(25)
 
         if self.on_practice_page==True:

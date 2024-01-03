@@ -14,6 +14,7 @@ class Application(tk.Tk):
         super().__init__()
         self.geometry("1200x900")
         self.title("Sign Alphabet")
+        self.configure(bg="white")
 
         self.current_page = None
 
@@ -74,23 +75,29 @@ class Application(tk.Tk):
         self.after(25, self.update_camera)
         
 
+    def increase_font_size(button):
+        current_font = button.cget("font")
+        new_size = int(current_font.split(" ")[-1]) + 2  # Increase font size by 2
+        button.config(font=("Helvetica", new_size))
+
+
     def show_start_page(self):
         if self.current_page:
             self.current_page.destroy()
 
-        self.current_page = tk.Frame(self, width=600, height=900)
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=300)
 
-        label = tk.Label(self.current_page, text="SignAlphabet", font=("FOT-RodinNTLG Pro DB", 48))
+        label = tk.Label(self.current_page, text="SignAlphabet", background="white", font=("FOT-RodinNTLG Pro DB", 48))
         label.grid()
 
-        label = tk.Label(self.current_page, text="A Project by Group 8", font=("FOT-RodinNTLG Pro DB", 12))
+        label = tk.Label(self.current_page, text="A Project by Group 8", background="white", font=("FOT-RodinNTLG Pro DB", 12))
         label.grid(pady=20)
 
-        select_button = tk.Button(self.current_page, text="Select Letter", bg="lightblue", command=self.show_alphabet_page)
+        select_button = tk.Button(self.current_page, text="Select Letter", bg="lightblue", font=(16), command=self.show_alphabet_page)
         select_button.grid(pady=20)
 
-        quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", command=self.confirm_quit)
+        quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", font=(16), command=self.confirm_quit)
         quit_button.grid(pady=20)
 
 
@@ -102,11 +109,11 @@ class Application(tk.Tk):
         if self.current_page:
             self.current_page.destroy()
 
-        self.current_page = tk.Frame(self, width=600, height=900)
-        self.current_page.pack(padx=10, pady=300)
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
+        self.current_page.pack(padx=10, pady=100)
 
-        label = tk.Label(self.current_page, text="Pick a letter!", font=("FOT-RodinNTLG Pro DB", 16))
-        label.grid(row=0, column=0, columnspan=5, pady=(0, 10))
+        label = tk.Label(self.current_page, text="Pick a letter!", background="white", font=("FOT-RodinNTLG Pro DB", 16))
+        label.grid(row=0, column=0, columnspan=5, pady=(120, 50))
 
         alphabet_buttons = []
         for row in range(6):
@@ -114,44 +121,46 @@ class Application(tk.Tk):
                 index = row * 5 + col
                 if index < 26:
                     letter = chr(65 + row * 5 + col)
-                    button = tk.Button(self.current_page, text=letter, bg="lightblue", command=lambda l=letter: self.show_practice_page(l))
+                    button = tk.Button(self.current_page, text=letter, bg="lightblue", command=lambda l=letter: self.show_practice_page(l), font=(16))
                     button.grid(row=row + 1, column=col, padx=5, pady=5)
+
                     alphabet_buttons.append(button)
 
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", command=self.show_start_page)
-        go_back_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.show_start_page)
+        go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
+
+
 
 
 
     def show_practice_page(self, selected_letter):
-        #self.pressed_back = False
         self.on_practice_page = True
-        self.predictions_list = ["","","","","","","",""] 
+        self.predictions_list = ["", "", "", "", "", "", "", ""]
 
         if self.current_page:
             self.current_page.destroy()
 
-        self.current_page = tk.Frame(self, width=600, height=900)
-        self.current_page.pack(padx=10, pady=300)
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
+        self.current_page.pack(padx=0, pady=100)
 
         image_path = f"interface/images/{selected_letter}.png"
         img = Image.open(image_path)
-        img = img.resize((200, 200))  
-        photo = ImageTk.PhotoImage(img)
-
-        image_label = tk.Label(self.current_page, image=photo)
-        image_label.photo = photo
-        image_label.grid(row=1, column=0, columnspan=5, padx=10, pady=10)
+        img = img.resize((200, 200))
+        rotated_img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        photo = ImageTk.PhotoImage(rotated_img)
 
         label_text = f"You're learning to sign '{selected_letter}'"
-        label = tk.Label(self.current_page, text=label_text, font=("FOT-RodinNTLG Pro DB", 16))
-        label.grid(row=0, column=0, columnspan=5, pady=(0, 10))
+        label = tk.Label(self.current_page, text=label_text, font=("FOT-RodinNTLG Pro DB", 16), bg="white")
+        label.grid(row=0, column=0, columnspan=5, pady=(120, 50)) 
 
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", command= self.show_alphabet_page) #show_alphabet_page, self.change_state_back_btn
-        go_back_button.grid(row=1, column=0, columnspan=5, pady=(200, 0))
+        image_label = tk.Label(self.current_page, image=photo, bg="white")
+        image_label.photo = photo
+        image_label.grid(row=1, column=0, columnspan=5, padx=0, pady=(20, 100)) 
 
-        print("in practice")
-        #print(self.pressed_back)
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.show_alphabet_page)
+        go_back_button.grid(row=2, column=0, columnspan=5, pady=(0, 20))
+        
+        print("in pracice")
         self.classify_sign(selected_letter)
 
         """if self.pressed_back == True:

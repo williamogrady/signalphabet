@@ -107,6 +107,7 @@ class Application(tk.Tk):
             self.current_page.destroy()
 
         self.on_test_page = False
+        print(f"On test page: {self.on_test_page}")
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=300)
@@ -128,9 +129,10 @@ class Application(tk.Tk):
 
     
     def start_test(self):
-        self.number_of_questions = 2
+        self.number_of_questions = 3
+        self.current_question_no = (-1)
         if len(self.test_letters) == 0:
-            self.test_letters = ["L", "A"]
+            self.test_letters = ["A", "L", "A"]
         self.test_timer = 120
         self.original_time = self.test_timer
         self.timer_running = True  
@@ -156,22 +158,39 @@ class Application(tk.Tk):
             self.current_page.destroy()
 
         self.on_test_page = True
+        self.current_question_no += 1
         print("On test page!")
+
+        self.correct_sign = False
+        self.x1 = None
+        self.y1 = None
+        self.x2 = None
+        self.y2 = None
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack()
-        
-        current_test_letter_label = tk.Label(self.current_page, text=str(current_test_letter), background="white")
-        current_test_letter_label.grid()
 
-        test_letters_label = tk.Label(self.current_page, text=str(self.test_letters), background="white")
-        test_letters_label.grid()
+        question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions + 1}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
+        question_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
 
-        number_of_questions_label = tk.Label(self.current_page, text=str(number_of_questions), background="white")
-        number_of_questions_label.grid()
+        # Display the first test letter
+        current_test_letter_label = tk.Label(self.current_page, text=current_test_letter, font=("Helvetica", 36, "bold"), bg="white")
+        current_test_letter_label.grid(row=1, column=0, columnspan=5, pady=(0, 100))
 
-        self.time_label = tk.Label(self.current_page, text=str(time), background="white")
+        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + "seconds", background="white")
         self.time_label.grid()
+
+        
+        #current_test_letter_label = tk.Label(self.current_page, text=str(current_test_letter), background="white")
+        #current_test_letter_label.grid()
+
+        #test_letters_label = tk.Label(self.current_page, text=str(self.test_letters), background="white")
+        #test_letters_label.grid()
+
+        #number_of_questions_label = tk.Label(self.current_page, text=str(number_of_questions), background="white")
+        #number_of_questions_label.grid()
+
+        
 
         next_question_button = tk.Button(self.current_page, text="Next question", bg="lightcoral", font=(16), command=self.show_next_question)
         next_question_button.grid()

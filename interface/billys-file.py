@@ -107,7 +107,10 @@ class Application(tk.Tk):
             self.current_page.destroy()
 
         self.on_test_page = False
-        print(f"On test page: {self.on_test_page}")
+        self.number_of_questions = 0
+        self.current_question_no = 1
+        self.test_letters = []
+        self.timer_running = False
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=300)
@@ -118,7 +121,7 @@ class Application(tk.Tk):
         credits2 = tk.Label(self.current_page, text="A Project by Group 8", background="white", font=("FOT-RodinNTLG Pro DB", 12))
         credits2.grid(pady=20)
 
-        practice_button = tk.Button(self.current_page, text="Select Letter", bg="lightblue", font=(16), command=self.show_alphabet_page)
+        practice_button = tk.Button(self.current_page, text="Practice Signing", bg="lightblue", font=(16), command=self.show_alphabet_page)
         practice_button.grid(pady=5)
 
         test_button = tk.Button(self.current_page, text="Test Your Abilities", bg="lightyellow", font=(16), command=self.start_test)
@@ -138,6 +141,7 @@ class Application(tk.Tk):
         self.timer_running = True  
         print("Test letters are" + str(self.test_letters))
         self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
+        
 
 
     def show_next_question(self):
@@ -199,8 +203,9 @@ class Application(tk.Tk):
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
 
         self.classify_sign(current_test_letter)
+        if self.current_question_no == 1:
+            self.update_timer()
 
-        self.update_timer()
 
     def update_timer(self):
         if self.timer_running and self.test_timer > 0:

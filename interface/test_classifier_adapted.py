@@ -46,13 +46,15 @@ def classify_letter(model, data, predictions_list):
         return predicted_letter
     except ValueError:
         return"""
-
+    #print( "vi är I classify letter" + str(data))
     try:
         prediction = model.predict([np.asarray(data)])
         #predicted_letter = prediction[0]
         # Accumulate the predicted signs over 2 seconds
         predictions_list.append(prediction[0])
-        predictions_list.pop(0)
+        #print(predictions_list)
+        if len(predictions_list) > 7:
+            predictions_list.pop(0)
         #print(predictions_list)
         #print(predictions_list[-1])
         #print(max(set(predictions_list), key = predictions_list.count))

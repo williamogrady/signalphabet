@@ -77,7 +77,7 @@ class Application(tk.Tk):
         elif self.on_test_page and self.current_page.winfo_class() != 'show_test_page':
             if (self.x1, self.y1, self.x2, self.y2):                   
                 draw_hand_rectangle(frame_flipped, self.x1, self.y1, self.x2, self.y2, self.correct_sign)
-        
+
         self.ret = ret
         self.frame = frame_flipped
 
@@ -133,12 +133,12 @@ class Application(tk.Tk):
         print("Test letters are" + str(self.test_letters))
         if len(self.test_letters) > 0:
             print("Next Question loading.")
-            current_test_letter = self.test_letters.pop(0)
+            self.test_letters.pop(0)
             print("Next Question loaded. Showing test page.")
-            self.show_test_page(current_test_letter, self.number_of_questions, self.test_timer)
+            self.show_test_page(self.test_letters[0], self.number_of_questions, self.test_timer)
         else:
             print("No more questions. Showing results page.")
-            self.after(25, self.show_results_page())
+            self.after(25, self.show_results_page)
 
 
     def start_test(self):
@@ -158,7 +158,7 @@ class Application(tk.Tk):
         self.current_question_no += 1
         print("On test page!")
 
-        self.correct_sign = False
+        self.correct_sign = False   
         self.x1 = None
         self.y1 = None
         self.x2 = None
@@ -166,6 +166,7 @@ class Application(tk.Tk):
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack()
+        
 
         question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
         question_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
@@ -182,7 +183,9 @@ class Application(tk.Tk):
         go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.reset_and_show_start_page)
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
 
+        print("classify-sign in test page")
         self.classify_sign(current_test_letter)
+
         if self.current_question_no == 1:
             self.update_timer()
 
@@ -331,15 +334,25 @@ class Application(tk.Tk):
                     self.y_.append(y)
             self.x1, self.y1, self.x2, self.y2 = find_hand_rectangle(self.x_, self.y_, self.H, self.W)
             classified_letter = classify_letter(self.model, data_aux, self.classifications_list)
-
+            #print(str(classified_letter))
+            #print(letter)
+            #print(self.classifications_list)
             self.correct_sign = self.is_sign_correct(letter, classified_letter)
+                
 
-            if self.correct_sign:
-                if self.on_test_page:
-                    self.after(25, self.show_next_question)  # Move to the next question after correct sign
         else:
+            
             self.x1, self.y1, self.x2, self.y2 = (None, None, None, None)
 
+         # Move to the next question after correct sign
+        
+
+        if self.on_test_page:
+            self.after(25, self.classify_sign, letter)
+            if self.correct_sign: 
+                print("Correct! Showing next question.")
+                self.after(25, self.show_next_question) # This is being called multiple times, because "self.correct_sign" is, too.
+                    
         if self.on_practice_page:
             self.after(25, self.classify_sign, letter)  # Continue classifying if on practice page
 

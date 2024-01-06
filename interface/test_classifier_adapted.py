@@ -39,7 +39,7 @@ def find_hand_rectangle(x_, y_, H, W):
     return x1, y1, x2, y2
         
 
-def predict_letter(model, data, predictions_list):
+def classify_letter(model, data, predictions_list):
     """try:
         prediction = model.predict([np.asarray(data)])
         predicted_letter = prediction[0]

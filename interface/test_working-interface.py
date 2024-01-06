@@ -218,6 +218,11 @@ class Application(tk.Tk):
             predicted_letter = predict_letter(self.model, data_aux, self.predictions_list)
 
             # Show frame with landmarks and predicted letter
+            #cv2.rectangle(self.frame,(x1, y1), (x2, y2), (0,0,0), 4)
+           
+            #print("Prediction:"+str(predicted_letter))
+            #print(self.predictions_list)
+
             self.correct_sign = self.is_sign_correct(letter, predicted_letter)
 
         # Hide the "Correct!" label if the sign is not correct

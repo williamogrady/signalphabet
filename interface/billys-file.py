@@ -49,8 +49,9 @@ class Application(tk.Tk):
         #self.correct_label = tk.Label(self, text="Correct!", font=("Helvetica", 18), fg="green", bg="white")
 
 
-        self.predictions_list = ["","","","","","","",""] 
+        self.classifications_list = [] #["","","","","","","",""] 
         self.selected_letter = ""
+
 
     def camera_page(self):
         self.camera_frame = tk.Frame(self, width=600, height=900)
@@ -58,6 +59,7 @@ class Application(tk.Tk):
 
         self.camera_label = tk.Label(self.camera_frame)
         self.camera_label.pack()
+
 
     def start_camera(self):
         self.cap = cv2.VideoCapture(0)
@@ -88,10 +90,6 @@ class Application(tk.Tk):
             self.camera_label.configure(image=photo)
             self.camera_label.image = photo
             self.camera_label.pack()
-
-
-
-
 
         self.after(25, self.update_camera)
         
@@ -240,13 +238,7 @@ class Application(tk.Tk):
         score_time_label.grid(pady=10)
 
 
-
-
-
-
     def show_alphabet_page(self):
-        print("in alphabet")
-        #print(self.pressed_back)
         self.on_practice_page = False
         if self.current_page:
             self.current_page.destroy()
@@ -272,12 +264,9 @@ class Application(tk.Tk):
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
 
 
-
-
-
     def show_practice_page(self, selected_letter):
         self.on_practice_page = True
-        self.predictions_list = ["", "", "", "", "", "", "", ""]
+        self.classifications_list = [None, None, None, None, None, None, None, None] #["", "", "", "", "", "", "", ""]
 
         if self.current_page:
             self.current_page.destroy()
@@ -307,7 +296,6 @@ class Application(tk.Tk):
         go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.show_alphabet_page)
         go_back_button.grid(row=2, column=0, columnspan=5, pady=(0, 20))
         
-        print("in practice")
         self.classify_sign(selected_letter) 
 
 
@@ -330,7 +318,7 @@ class Application(tk.Tk):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.hand_detection_model.process(frame_rgb)
 
-        predicted_letter = ""
+        #classified_letter = ""
 
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
@@ -350,9 +338,12 @@ class Application(tk.Tk):
                     self.x_.append(x)
                     self.y_.append(y)
             self.x1, self.y1, self.x2, self.y2 = find_hand_rectangle(self.x_, self.y_, self.H, self.W)
-            predicted_letter = predict_letter(self.model, data_aux, self.predictions_list)
+            classified_letter = classify_letter(self.model, data_aux, self.classifications_list)
 
-            self.correct_sign = self.is_sign_correct(letter, predicted_letter)
+            self.correct_sign = self.is_sign_correct(letter, classified_letter)
+
+        else:
+            self.x1, self.y1, self.x2, self.y2 = (None, None, None, None)
 
         # Check if the sign is correct
         if self.correct_sign:
@@ -366,12 +357,12 @@ class Application(tk.Tk):
                 self.show_next_question()
         else:
             # Continue classifying if the sign is incorrect
-            self.after(25, self.classify_sign, letter)
+            self.after(25, self.classify_sign, letter) #25ms, now looks at every other page
 
 
     def is_sign_correct(self, selected_letter, signed_letter):
         """print("selected:" + str(selected_letter))
-        print("predicted:" + str(signed_letter))"""
+        print("classified:" + str(signed_letter))"""
 
         if selected_letter == signed_letter:
             return True

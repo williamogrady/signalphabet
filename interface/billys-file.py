@@ -130,7 +130,7 @@ class Application(tk.Tk):
     
     def start_test(self):
         self.number_of_questions = 3
-        self.current_question_no = (-1)
+        self.current_question_no = 0
         if len(self.test_letters) == 0:
             self.test_letters = ["A", "L", "A"]
         self.test_timer = 120
@@ -170,7 +170,7 @@ class Application(tk.Tk):
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack()
 
-        question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions + 1}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
+        question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
         question_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
 
         # Display the first test letter
@@ -214,6 +214,12 @@ class Application(tk.Tk):
     def show_results_page(self):
         if self.current_page:
             self.current_page.destroy()
+
+        self.correct_sign = False
+        self.x1 = None
+        self.y1 = None
+        self.x2 = None
+        self.y2 = None
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=100)

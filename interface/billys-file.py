@@ -40,13 +40,17 @@ class Application(tk.Tk):
         #test
         self.test_letters = []
         self.test_timer = 0
+        self.high_score_list = []
+
+        # Validation function to restrict input to three characters
+        validate_cmd = (self.register(lambda s: len(s) <= 3), '%P')
 
         self.camera_page()
         self.start_camera()
         self.show_start_page()  
         
         
-        #self.correct_label = tk.Label(self, text="Correct!", font=("Helvetica", 18), fg="green", bg="white")
+        #self.correct_label = tk.Label(self, text="Correct!", font=("FOT-RodinNTLG Pro DB", 18), fg="green", bg="white")
 
 
         self.classifications_list = [] #["","","","","","","",""] 
@@ -111,7 +115,7 @@ class Application(tk.Tk):
         self.timer_running = False
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
-        self.current_page.pack(padx=10, pady=300)
+        self.current_page.pack(padx=10, pady=250)
 
         credits1 = tk.Label(self.current_page, text="SignAlphabet", background="white", font=("FOT-RodinNTLG Pro DB", 48))
         credits1.grid()
@@ -119,32 +123,38 @@ class Application(tk.Tk):
         credits2 = tk.Label(self.current_page, text="A Project by Group 8", background="white", font=("FOT-RodinNTLG Pro DB", 12))
         credits2.grid(pady=20)
 
-        practice_button = tk.Button(self.current_page, text="Practice Signing", bg="lightblue", font=(16), command=self.show_alphabet_page)
+        practice_button = tk.Button(self.current_page, text="Practice Signing", bg="lightblue", font=("FOT-RodinNTLG Pro DB", 16), command=self.show_alphabet_page)
         practice_button.grid(pady=5)
 
-        test_button = tk.Button(self.current_page, text="Test Your Abilities", bg="lightyellow", font=(16), command=self.start_test)
-        test_button.grid(pady=5)
+        test_button = tk.Button(self.current_page, text="Test Your Abilities", bg="lightyellow", font=("FOT-RodinNTLG Pro DB", 16), command=self.start_test)
+        test_button.grid(pady=10)
 
-        quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", font=(16), command=self.confirm_quit)
-        quit_button.grid(pady=20)
+        quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", font=("FOT-RodinNTLG Pro DB", 12), command=self.confirm_quit)
+        quit_button.grid(pady=30)
 
 
     def show_next_question(self):
         if self.current_page:
             self.current_page.destroy()
 
-        self.current_page = tk.Frame(self, width=600, height=900, background="white")
-        self.current_page.pack()
+        self.timer_running = True
 
-        correct_label = tk.Label(self.current_page, text="Correct! The next letter is ...", font=(14), fg="green", bg="white")
-        correct_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
+        self.current_page.pack(padx=10, pady=250)
+
+        correct_label = tk.Label(self.current_page, text="Correct! The next letter is ...", font=("FOT-RodinNTLG Pro DB", 24), fg="green", bg="white")
+        correct_label.grid(row=0, column=0, columnspan=5)
+
+        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + " seconds", font=("FOT-RodinNTLG Pro DB", 16), background="white")
+        self.time_label.grid(pady=(50))
+
 
         print("Test letters are" + str(self.test_letters))
         if len(self.test_letters) > 1:
             print("Next Question loading.")
             self.test_letters.pop(0)
             print("Next Question loaded. Showing test page.")
-            self.after(5000, self.show_test_page, self.test_letters[0], self.number_of_questions, self.test_timer)
+            self.after(3000, self.show_test_page, self.test_letters[0], self.number_of_questions, self.test_timer)
         else:
             print("No more questions. Showing results page.")
             self.after(25, self.show_results_page)
@@ -173,23 +183,19 @@ class Application(tk.Tk):
         self.y2 = None
 
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
-        self.current_page.pack()
-        
+        self.current_page.pack(padx=10, pady=250)
 
-        question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
+        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + " seconds", font=("FOT-RodinNTLG Pro DB", 16), background="white")
+        self.time_label.grid(pady=20)        
+
+        question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions}: What is the sign for: {current_test_letter}", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
         question_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
 
-        current_test_letter_label = tk.Label(self.current_page, text=current_test_letter, font=("Helvetica", 36, "bold"), bg="white")
-        current_test_letter_label.grid(row=1, column=0, columnspan=5, pady=(0, 100))
+        current_test_letter_label = tk.Label(self.current_page, text=current_test_letter, font=("FOT-RodinNTLG Pro DB", 36, "bold"), bg="white")
+        current_test_letter_label.grid(row=1, column=0, columnspan=5, padx=0, pady=(20, 100)) 
 
-        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + " seconds", background="white")
-        self.time_label.grid()
-
-        next_question_button = tk.Button(self.current_page, text="Next question", bg="lightcoral", font=(16), command=self.show_next_question)
-        next_question_button.grid()
-
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.reset_and_show_start_page)
-        go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=("FOT-RodinNTLG Pro DB", 16), command=self.reset_and_show_start_page)
+        go_back_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
         self.next_question_call = False
 
@@ -227,23 +233,92 @@ class Application(tk.Tk):
         self.x2 = None
         self.y2 = None
 
-        self.current_page = tk.Frame(self, width=600, height=900, background="white")
-        self.current_page.pack(padx=10, pady=100)
-
-
         remaining_time = self.test_timer
         self.score_time =  self.original_time - remaining_time 
         self.timer_running = False
 
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
+        self.current_page.pack(padx=10, pady=250)
 
-        current_test_letter_label = tk.Label(self.current_page, text="You are on the results page", background="white")
-        current_test_letter_label.grid(pady=20)
+        # Display "Results" in a big black label
+        results_label = tk.Label(self.current_page, text="Results", font=("FOT-RodinNTLG Pro DB", 36, "bold"), fg="black", bg="white")
+        results_label.grid(row=0, column=0, columnspan=5, pady=(120, 50)) 
 
-        remaining_time_label = tk.Label(self.current_page, text=f"Timer paused at {remaining_time} seconds", background="white")
-        remaining_time_label.grid(pady=20)
+        # Display "You completed the test in {self.score_time}." below the Results label
+        completed_time_label = tk.Label(self.current_page, text=f"You completed the test in {self.score_time} seconds.", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
+        completed_time_label.grid(row=1, column=0, columnspan=5, pady=(10, 20))
 
-        score_time_label = tk.Label(self.current_page, text=f"You completed the test in {self.score_time} seconds", background="white")
-        score_time_label.grid(pady=10)
+        # Create a frame for the scoreboard
+        self.scoreboard_frame = tk.Frame(self.current_page, bg="white", width=400, height=400)
+        self.scoreboard_frame.grid(row=2, column=0, columnspan=5, pady=(20, 0))
+
+        # Display "Scoreboard" above the frame
+        scoreboard_title_label = tk.Label(self.scoreboard_frame, text="Scoreboard", font=("FOT-RodinNTLG Pro DB", 16, "bold"), bg="white")
+        scoreboard_title_label.grid(row=0, column=0, pady=(10, 10))
+
+        # Create a text label for entering the name
+        enter_name_label = tk.Label(self.scoreboard_frame, text="Enter your name", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
+        enter_name_label.grid(row=1, column=0, pady=(10, 5))
+
+        # Create a textbox restricted to three letters
+        name_entry = tk.Entry(self.scoreboard_frame, font=("FOT-RodinNTLG Pro DB", 12), width=5)
+        name_entry.grid(row=2, column=0, pady=(0, 10))
+
+        go_back_button = tk.Button(self.current_page, text="Back to Start", bg="lightgreen", font=("FOT-RodinNTLG Pro DB", 16), command=self.show_start_page)
+        go_back_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
+
+        def submit_name():
+            name = name_entry.get()[:3] 
+            self.update_high_score_list(name, self.score_time)
+            self.display_high_scores()
+
+        # Bind the enter key to submit the name
+        self.current_page.bind('<Return>', lambda event=None: submit_name())
+
+        # Create a button to submit the name
+        submit_button = tk.Button(self.scoreboard_frame, text="Submit", command=submit_name, font=("FOT-RodinNTLG Pro DB", 12), bg="green")
+        submit_button.grid(row=3, column=0, pady=(0, 10))
+
+    def update_high_score_list(self, name, score_time):
+        # Add the new score to the high score list
+        self.high_score_list.append((name, score_time))
+        # Sort the list by the score in ascending order
+        self.high_score_list.sort(key=lambda x: x[1])
+        # Keep only the top 5 scores
+        self.high_score_list = self.high_score_list[:5]
+
+    def display_high_scores(self):
+        # Destroy the current scoreboard frame
+        for widget in self.current_page.winfo_children():
+            widget.destroy()
+
+        # Create a new frame for the updated scoreboard
+        updated_scoreboard_frame = tk.Frame(self.current_page, bg="white", width=400, height=400)
+        updated_scoreboard_frame.grid(padx=10, pady=250)
+
+
+        # Display "Results" in a big black label
+        results_label = tk.Label(self.current_page, text="Results", font=("FOT-RodinNTLG Pro DB", 36, "bold"), bg="white")
+        results_label.grid(row=0, column=0, columnspan=5, pady=(120, 50)) 
+
+        # Display "You completed the test in {self.score_time}." below the Results label
+        completed_time_label = tk.Label(self.current_page, text=f"You completed the test in {self.score_time} seconds.", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
+        completed_time_label.grid(row=1, column=0, columnspan=5, pady=(10, 20))
+
+        # Display "Scoreboard" above the frame
+        scoreboard_title_label = tk.Label(updated_scoreboard_frame, text="Scoreboard", font=("FOT-RodinNTLG Pro DB", 16, "bold"), bg="white")
+        scoreboard_title_label.grid(row=0, column=0, pady=(10, 10))
+
+        # Display the updated high score list in the frame
+        for i, (name, score_time) in enumerate(self.high_score_list):
+            score_label = tk.Label(updated_scoreboard_frame, text=f"{i + 1}. {name}: {score_time} seconds", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
+            score_label.grid(row=i + 1, column=0, pady=(0, 5))
+
+        restart_button = tk.Button(self.current_page, text="Restart Test", bg="lightblue", font=("FOT-RodinNTLG Pro DB", 16), command=self.start_test)
+        restart_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
+
+        go_back_button = tk.Button(self.current_page, text="Back to Start", bg="lightgreen", font=("FOT-RodinNTLG Pro DB", 16), command=self.reset_and_show_start_page)
+        go_back_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
 
     def show_alphabet_page(self):
@@ -263,13 +338,13 @@ class Application(tk.Tk):
                 index = row * 5 + col
                 if index < 26:
                     letter = chr(65 + row * 5 + col)
-                    button = tk.Button(self.current_page, text=letter, bg="lightblue", command=lambda l=letter: self.show_practice_page(l), font=(16))
+                    button = tk.Button(self.current_page, text=letter, bg="lightblue", command=lambda l=letter: self.show_practice_page(l), font=("FOT-RodinNTLG Pro DB", 16))
                     button.grid(row=row + 1, column=col, padx=5, pady=5)
 
                     alphabet_buttons.append(button)
 
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.show_start_page)
-        go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=("FOT-RodinNTLG Pro DB", 16), command=self.reset_and_show_start_page)
+        go_back_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
 
     def show_practice_page(self, selected_letter):

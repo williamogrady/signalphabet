@@ -128,27 +128,32 @@ class Application(tk.Tk):
         quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", font=(16), command=self.confirm_quit)
         quit_button.grid(pady=20)
 
+    
+    def start_test(self):
+        self.number_of_questions = 3
+        self.current_question_no = 0
+        if len(self.test_letters) == 0:
+            self.test_letters = ["A", "L", "A"]
+        self.test_timer = 120
+        self.original_time = self.test_timer
+        self.timer_running = True  
+        print("Test letters are" + str(self.test_letters))
+        self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
+        
+
 
     def show_next_question(self):
         print("Test letters are" + str(self.test_letters))
         if len(self.test_letters) > 0:
             print("Next Question loading.")
-            self.test_letters.pop(0)
+            current_test_letter = self.test_letters.pop(0)
             print("Next Question loaded. Showing test page.")
-            self.show_test_page(self.test_letters[0], self.number_of_questions, self.test_timer)
+            self.show_test_page(current_test_letter, self.number_of_questions, self.test_timer)
         else:
             print("No more questions. Showing results page.")
             self.after(25, self.show_results_page())
 
 
-    def start_test(self):
-        self.number_of_questions = 3
-        self.current_question_no = 0
-        self.test_letters = ["A", "L", "A"]
-        self.test_timer = 120
-        self.original_time = self.test_timer
-        self.timer_running = True
-        self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
 
     def show_test_page(self, current_test_letter, number_of_questions, time):
         if self.current_page:
@@ -170,28 +175,34 @@ class Application(tk.Tk):
         question_label = tk.Label(self.current_page, text=f"Question {self.current_question_no}"+ "/" + f"{number_of_questions}: What is the sign for: {current_test_letter}", font=("Helvetica", 14), bg="white")
         question_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
 
+        # Display the first test letter
         current_test_letter_label = tk.Label(self.current_page, text=current_test_letter, font=("Helvetica", 36, "bold"), bg="white")
         current_test_letter_label.grid(row=1, column=0, columnspan=5, pady=(0, 100))
 
-        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + " seconds", background="white")
+        self.time_label = tk.Label(self.current_page, text="Time left:" + str(time) + "seconds", background="white")
         self.time_label.grid()
+
+        
+        #current_test_letter_label = tk.Label(self.current_page, text=str(current_test_letter), background="white")
+        #current_test_letter_label.grid()
+
+        #test_letters_label = tk.Label(self.current_page, text=str(self.test_letters), background="white")
+        #test_letters_label.grid()
+
+        #number_of_questions_label = tk.Label(self.current_page, text=str(number_of_questions), background="white")
+        #number_of_questions_label.grid()
+
+        
 
         next_question_button = tk.Button(self.current_page, text="Next question", bg="lightcoral", font=(16), command=self.show_next_question)
         next_question_button.grid()
 
-        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.reset_and_show_start_page)
+        go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.show_start_page)
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
 
         self.classify_sign(current_test_letter)
         if self.current_question_no == 1:
             self.update_timer()
-
-    def reset_and_show_start_page(self):
-        self.number_of_questions = 0
-        self.current_question_no = 1
-        self.test_letters = []
-        self.timer_running = False
-        self.show_start_page()
 
 
     def update_timer(self):
@@ -312,6 +323,8 @@ class Application(tk.Tk):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.hand_detection_model.process(frame_rgb)
 
+        #classified_letter = ""
+
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
                 self.mp_drawing.draw_landmarks(
@@ -334,14 +347,23 @@ class Application(tk.Tk):
 
             self.correct_sign = self.is_sign_correct(letter, classified_letter)
 
-            if self.correct_sign:
-                if self.on_test_page:
-                    self.after(25, self.show_next_question)  # Move to the next question after correct sign
         else:
             self.x1, self.y1, self.x2, self.y2 = (None, None, None, None)
 
-        if self.on_practice_page:
-            self.after(25, self.classify_sign, letter)  # Continue classifying if on practice page
+        # Check if the sign is correct
+        if self.correct_sign:
+            # Trigger the response based on the current page
+            if self.on_practice_page:
+                # Continue classifying if on practice page
+                self.after(25, self.classify_sign, letter)
+            elif self.on_test_page:
+                print("Classify_sign: Correct, going to next question.")
+                # Trigger the same response as the "Next question" button for the test page
+                self.show_next_question()
+        
+        elif self.on_practice_page or self.on_test_page:
+            # Continue classifying if the sign is incorrect
+            self.after(25, self.classify_sign, letter) #25ms, now looks at every other page
 
 
     def is_sign_correct(self, selected_letter, signed_letter):

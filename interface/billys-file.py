@@ -130,16 +130,24 @@ class Application(tk.Tk):
 
 
     def show_next_question(self):
+        if self.current_page:
+            self.current_page.destroy()
+
+        self.current_page = tk.Frame(self, width=600, height=900, background="white")
+        self.current_page.pack()
+
+        correct_label = tk.Label(self.current_page, text="Correct! The next letter is ...", font=(14), fg="green", bg="white")
+        correct_label.grid(row=0, column=0, columnspan=5, pady=(120, 10))
+
         print("Test letters are" + str(self.test_letters))
-        if len(self.test_letters) > 0:
+        if len(self.test_letters) > 1:
             print("Next Question loading.")
             self.test_letters.pop(0)
             print("Next Question loaded. Showing test page.")
-            self.show_test_page(self.test_letters[0], self.number_of_questions, self.test_timer)
+            self.after(5000, self.show_test_page, self.test_letters[0], self.number_of_questions, self.test_timer)
         else:
             print("No more questions. Showing results page.")
             self.after(25, self.show_results_page)
-
 
     def start_test(self):
         self.number_of_questions = 3
@@ -183,8 +191,11 @@ class Application(tk.Tk):
         go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightgreen", font=(16), command=self.reset_and_show_start_page)
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(70, 0))
 
-        print("classify-sign in test page")
+        self.next_question_call = False
+
         self.classify_sign(current_test_letter)
+
+
 
         if self.current_question_no == 1:
             self.update_timer()
@@ -338,24 +349,26 @@ class Application(tk.Tk):
             #print(letter)
             #print(self.classifications_list)
             self.correct_sign = self.is_sign_correct(letter, classified_letter)
-                
 
         else:
             
             self.x1, self.y1, self.x2, self.y2 = (None, None, None, None)
-
-         # Move to the next question after correct sign
+         
+        if self.correct_sign:
+            print("Correct sign.")
+            # Trigger the response based on the current page
+            if self.on_practice_page:
+                # Continue classifying if on practice page
+                self.after(25, self.classify_sign, letter)
+            elif self.on_test_page:
+                print("Classify_sign: Correct, going to next question.")
+                # Trigger the same response as the "Next question" button for the test page
+                self.show_next_question()
         
-
-        if self.on_test_page:
-            self.after(25, self.classify_sign, letter)
-            if self.correct_sign: 
-                print("Correct! Showing next question.")
-                self.after(25, self.show_next_question) # This is being called multiple times, because "self.correct_sign" is, too.
-                    
-        if self.on_practice_page:
-            self.after(25, self.classify_sign, letter)  # Continue classifying if on practice page
-
+        elif self.on_practice_page or self.on_test_page:
+            # Continue classifying if the sign is incorrect
+            self.after(25, self.classify_sign, letter) #25ms, now looks at every other page
+            
 
     def is_sign_correct(self, selected_letter, signed_letter):
         """print("selected:" + str(selected_letter))

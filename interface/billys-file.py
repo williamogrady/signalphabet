@@ -473,11 +473,6 @@ class Application(tk.Tk):
         # Periodically check for updates and update the label on the practice page
         current_count = self.classification_count[letter]
 
-        print("SELF:" + self.selected_letter)
-        print("LETTER:" + letter)
-       
-        print(f"Current count for {letter}: {current_count}")
-
         # Update StringVar with the current classification count
         self.classification_count_var.set(current_count)
 

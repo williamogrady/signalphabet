@@ -1,4 +1,5 @@
 from cgi import test
+import select
 import tkinter as tk
 from tkinter import messagebox
 from turtle import delay
@@ -38,6 +39,7 @@ class Application(tk.Tk):
         self.correct_sign = False
 
         self.classification_count = {letter: 0 for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
+        self.classification_count_var = tk.StringVar()
 
         #test
         self.available_test_letters = []
@@ -207,7 +209,7 @@ class Application(tk.Tk):
         self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
 
     def start_expert_test(self):
-        self.available_test_letters = ["L", "L", "L", "L", "L"] # random.sample("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5)
+        self.available_test_letters = random.sample("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5)
         self.number_of_questions = 5
         self.current_question_no = 0
         self.test_letters = random.sample(self.available_test_letters, self.number_of_questions)
@@ -388,7 +390,7 @@ class Application(tk.Tk):
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=100)
 
-        label = tk.Label(self.current_page, text="Pick a letter!", background="white", font=("FOT-RodinNTLG Pro DB", 16))
+        label = tk.Label(self.current_page, text="Pick a letter to learn!", background="white", font=("FOT-RodinNTLG Pro DB", 16))
         label.grid(row=0, column=0, columnspan=5, pady=(120, 50))
 
         alphabet_buttons = []
@@ -434,6 +436,8 @@ class Application(tk.Tk):
         if self.current_page:
             self.current_page.destroy()
 
+        self.selected_letter = selected_letter
+
         self.x1 = None
         self.y1 = None
         self.x2 = None
@@ -454,12 +458,42 @@ class Application(tk.Tk):
 
         image_label = tk.Label(self.current_page, image=photo, bg="white")
         image_label.photo = photo
-        image_label.grid(row=1, column=0, columnspan=5, padx=0, pady=(20, 100)) 
+        image_label.grid(row=1, column=0, columnspan=5, padx=0, pady=(20, 60)) 
+
+
+        self.update_classification_count_on_page(selected_letter)
 
         go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightcoral", font=("FOT-RodinNTLG Pro DB", 12), command=self.show_alphabet_page)
-        go_back_button.grid(row=2, column=0, columnspan=5, pady=(0, 20))
+        go_back_button.grid(row=4, column=0, columnspan=5, pady=(50, 20), sticky="ns")
         
-        self.classify_sign(selected_letter, False) 
+        self.classify_sign(selected_letter) 
+
+
+    def update_classification_count_on_page(self, letter):
+        # Periodically check for updates and update the label on the practice page
+        current_count = self.classification_count[letter]
+
+        print("SELF:" + self.selected_letter)
+        print("LETTER:" + letter)
+       
+        print(f"Current count for {letter}: {current_count}")
+
+        # Update StringVar with the current classification count
+        self.classification_count_var.set(current_count)
+
+        # Check if the count has reached 20 and show the success message
+        if self.selected_letter == letter and current_count >= 20:
+            self.show_success_message(letter)
+
+        # Schedule the next update after a delay (e.g., 1000 milliseconds)
+        self.after(1000, self.update_classification_count_on_page, letter)
+        
+
+    def show_success_message(self, letter):
+        print("in success message")
+        if self.on_practice_page:
+            success_label = tk.Label(self.current_page, text=f"Successfully learned {letter}!", font=("FOT-RodinNTLG Pro DB", 12, "bold"), fg="green", bg="white")
+            success_label.grid(row=3, column=0, columnspan=5, pady=(0, 0), sticky="ns")
 
 
     def confirm_quit(self):

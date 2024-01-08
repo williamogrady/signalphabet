@@ -40,6 +40,7 @@ class Application(tk.Tk):
         self.classification_count = {letter: 0 for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
 
         #test
+        self.available_test_letters = []
         self.test_letters = []
         self.test_timer = 0
         self.high_score_list = self.load_high_scores()
@@ -128,14 +129,46 @@ class Application(tk.Tk):
         practice_button = tk.Button(self.current_page, text="Practice Signing", bg="lightblue", font=("FOT-RodinNTLG Pro DB", 16), command=self.show_alphabet_page)
         practice_button.grid(pady=5)
 
-        test_button = tk.Button(self.current_page, text="Test Your Abilities", bg="lightyellow", font=("FOT-RodinNTLG Pro DB", 16), command=self.start_test)
-        test_button.grid(pady=10)
+        test_button = tk.Button(self.current_page, text="Test Your Abilities", bg="lightyellow", font=("FOT-RodinNTLG Pro DB", 16), command=self.check_and_start_test)
+        test_button.grid(row=3, pady=10, sticky="n")
 
         quit_button = tk.Button(self.current_page, text="Quit", bg="lightcoral", font=("FOT-RodinNTLG Pro DB", 12), command=self.confirm_quit)
-        quit_button.grid(pady=30)
+        quit_button.grid(row=4, pady=30)
 
-        credits3 = tk.Label(self.current_page, text="Version 1.0", background="white", font=("FOT-RodinNTLG Pro DB", 12))
-        credits3.grid(pady=20)
+        credits3 = tk.Label(self.current_page, text="Version 1.1", background="white", font=("FOT-RodinNTLG Pro DB", 12))
+        credits3.grid(pady=(50,0))
+
+    def check_and_start_test(self): 
+        
+        if len(self.available_test_letters) < 3:
+            if self.current_page:
+                self.current_page.destroy()
+
+                self.current_page = tk.Frame(self, width=600, height=900, background="white")
+                self.current_page.pack(padx=10, pady=200)
+            
+                # Display a message if available_test_letters is empty
+                error_label = tk.Label(self.current_page, text="You haven't practiced any letters yet!", font=("FOT-RodinNTLG Pro DB", 14), fg="red", bg="white")
+                error_label.grid(row=2, column=0, columnspan=5, pady=(0, 20))
+
+                error_label = tk.Label(self.current_page, text="Learn at least 3 letters first.", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
+                error_label.grid(row=3, column=0, columnspan=5, pady=(20, 70))
+
+                expert_button = tk.Button(self.current_page, text="Let's do it anyway!", bg="lightyellow", font=("FOT-RodinNTLG Pro DB", 12), command=self.start_expert_test)
+                expert_button.grid(row=4, column=0, columnspan=5, pady=(50, 0))
+
+                note_label = tk.Label(self.current_page, text="This button will start the Expert Test.", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
+                note_label.grid(row=5, column=0, columnspan=5, pady=(30, 10))
+                
+                note2_label = tk.Label(self.current_page, text="5 random questions in 60 seconds.", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
+                note2_label.grid(row=6, column=0, columnspan=5, pady=(5, 10))
+
+                go_back_button = tk.Button(self.current_page, text="Back to Start", bg="lightcoral", font=("FOT-RodinNTLG Pro DB", 12), command=self.reset_and_show_start_page)
+                go_back_button.grid(row=7, column=0, columnspan=5, pady=(50, 0))
+        
+        else:
+            # Start the test if available_test_letters is not empty
+            self.start_test()
 
 
     def show_next_question(self):
@@ -153,8 +186,6 @@ class Application(tk.Tk):
         correct_label = tk.Label(self.current_page, text="Correct! The next letter is ...", font=("FOT-RodinNTLG Pro DB", 24), fg="green", bg="white")
         correct_label.grid(row=0, column=0, columnspan=5, pady=(200, 0))
 
-
-
         print("Test letters are" + str(self.test_letters))
         if len(self.test_letters) > 1:
             print("Next Question loading.")
@@ -166,10 +197,21 @@ class Application(tk.Tk):
             self.after(25, self.show_results_page)
 
     def start_test(self):
-        self.number_of_questions = 3
+        self.available_test_letters = [letter for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if self.get_button_color(letter) == "lightgreen"]
+        self.number_of_questions = min(3, len(self.available_test_letters))
         self.current_question_no = 0
-        self.test_letters = random.sample("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 3)
+        self.test_letters = random.sample(self.available_test_letters, self.number_of_questions)
         self.test_timer = 120
+        self.original_time = self.test_timer
+        self.timer_running = True
+        self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
+
+    def start_expert_test(self):
+        self.available_test_letters = ["L", "L", "L", "L", "L"] # random.sample("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5)
+        self.number_of_questions = 5
+        self.current_question_no = 0
+        self.test_letters = random.sample(self.available_test_letters, self.number_of_questions)
+        self.test_timer = 60
         self.original_time = self.test_timer
         self.timer_running = True
         self.show_test_page(self.test_letters[0], len(self.test_letters), self.test_timer)
@@ -273,7 +315,7 @@ class Application(tk.Tk):
         go_back_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
         def submit_name():
-            name = name_entry.get()[:3]
+            name = name_entry.get()[:5]
             if name == "":
                 name = "User"
             self.update_high_score_list(name, self.score_time)
@@ -288,7 +330,7 @@ class Application(tk.Tk):
 
     def update_high_score_list(self, name, score_time):
         # Add the new score to the high score list
-        self.high_score_list.append((name, score_time))
+        self.high_score_list.append((name, score_time, self.number_of_questions))
         # Sort the list by the score in ascending order
         self.high_score_list.sort(key=lambda x: x[1])
         # Keep only the top 5 scores
@@ -328,7 +370,7 @@ class Application(tk.Tk):
 
         # Display the updated high score list in the frame
         for i, (name, score_time) in enumerate(self.high_score_list):
-            score_label = tk.Label(self.current_page, text=f"{i + 1}. {name}: {score_time} seconds", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
+            score_label = tk.Label(self.current_page, text=f"{i + 1}. {name}: {score_time} seconds", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
             score_label.grid(row=i + 1, column=0, pady=(0, 5))
 
         restart_button = tk.Button(self.current_page, text="Restart Test", bg="lightblue", font=("FOT-RodinNTLG Pro DB", 12), command=self.start_test)
@@ -367,12 +409,12 @@ class Application(tk.Tk):
 
 
     def get_button_color(self, letter):
-        # Determine the button color based on the classification count
-        count = self.classification_count[letter]
-        if count >= 50:
-            return "lightgreen"
-        else:
-            return "lightblue"
+            count = self.classification_count[letter]
+            if count >= 20:
+                self.available_test_letters.append(letter)
+                return "lightgreen"
+            else:
+                return "lightblue"
 
     def get_alphabet_button(self, letter):
         # Find the button corresponding to the given letter
@@ -417,7 +459,7 @@ class Application(tk.Tk):
         go_back_button = tk.Button(self.current_page, text="Go Back", bg="lightcoral", font=("FOT-RodinNTLG Pro DB", 12), command=self.show_alphabet_page)
         go_back_button.grid(row=2, column=0, columnspan=5, pady=(0, 20))
         
-        self.classify_sign(selected_letter) 
+        self.classify_sign(selected_letter, False) 
 
 
     def confirm_quit(self):

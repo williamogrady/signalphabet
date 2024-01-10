@@ -41,24 +41,24 @@ class Application(tk.Tk):
         self.classification_count = {letter: 0 for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
         self.classification_count_var = tk.StringVar()
 
-        #test
+   
         self.available_test_letters = []
         self.test_letters = []
         self.test_timer = 0
         self.high_score_list = self.load_high_scores()
         
 
-        # Validation function to restrict input to three characters
+      
 
         self.camera_page()
         self.start_camera()
         self.show_start_page()  
         
         
-        #self.correct_label = tk.Label(self, text="Correct!", font=("FOT-RodinNTLG Pro DB", 18), fg="green", bg="white")
+        
 
 
-        self.classifications_list = [] #["","","","","","","",""] 
+        self.classifications_list = [] 
         self.selected_letter = ""
 
 
@@ -77,7 +77,7 @@ class Application(tk.Tk):
 
     def update_camera(self):
         ret, frame = self.cap.read()
-        frame_flipped = cv2.flip(frame, 1)  # flipping frames to display as mirrored
+        frame_flipped = cv2.flip(frame, 1) 
         
         if self.on_practice_page and self.current_page.winfo_class() != 'show_practice_page':
             if (self.x1, self.y1, self.x2, self.y2):                   
@@ -149,7 +149,7 @@ class Application(tk.Tk):
                 self.current_page = tk.Frame(self, width=600, height=900, background="white")
                 self.current_page.pack(padx=10, pady=200)
             
-                # Display a message if available_test_letters is empty
+                
                 error_label = tk.Label(self.current_page, text="You haven't practiced any letters yet!", font=("FOT-RodinNTLG Pro DB", 14), fg="red", bg="white")
                 error_label.grid(row=2, column=0, columnspan=5, pady=(0, 20))
 
@@ -169,7 +169,7 @@ class Application(tk.Tk):
                 go_back_button.grid(row=7, column=0, columnspan=5, pady=(50, 0))
         
         else:
-            # Start the test if available_test_letters is not empty
+           
             self.start_test()
 
 
@@ -224,7 +224,6 @@ class Application(tk.Tk):
 
         self.on_test_page = True
         self.current_question_no += 1
-        print("On test page!")
 
         self.correct_sign = False   
         self.x1 = None
@@ -267,7 +266,7 @@ class Application(tk.Tk):
         if self.timer_running and self.test_timer > 0:
             self.test_timer -= 1
             self.time_label.config(text=str(self.test_timer))
-            self.after(1000, self.update_timer)  # Update the timer every second
+            self.after(1000, self.update_timer)  
         elif self.timer_running and self.test_timer == 0:
             self.show_results_page()
 
@@ -289,27 +288,27 @@ class Application(tk.Tk):
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=100)
 
-        # Display "Results" in a big black label
+    
         results_label = tk.Label(self.current_page, text="Results", font=("FOT-RodinNTLG Pro DB", 36, "bold"), fg="black", bg="white")
         results_label.grid(row=0, column=0, columnspan=5, pady=(120, 50)) 
 
-        # Display "You completed the test in {self.score_time}." below the Results label
+       
         completed_time_label = tk.Label(self.current_page, text=f"You completed the test in {self.score_time} seconds.", font=("FOT-RodinNTLG Pro DB", 14), bg="white")
         completed_time_label.grid(row=1, column=0, columnspan=5, pady=(10, 20))
 
-        # Create a frame for the scoreboard
+        
         self.scoreboard_frame = tk.Frame(self.current_page, bg="white", width=400, height=400)
         self.scoreboard_frame.grid(row=2, column=0, columnspan=5, pady=(20, 0))
 
-        # Display "Scoreboard" above the frame
+      
         scoreboard_title_label = tk.Label(self.scoreboard_frame, text="Scoreboard", font=("FOT-RodinNTLG Pro DB", 16, "bold"), bg="white")
         scoreboard_title_label.grid(row=0, column=0, pady=(10, 10))
 
-        # Create a text label for entering the name
+
         enter_name_label = tk.Label(self.scoreboard_frame, text="Enter your name", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
         enter_name_label.grid(row=1, column=0, pady=(10, 5))
 
-        # Create a textbox restricted to three letters
+   
         name_entry = tk.Entry(self.scoreboard_frame, font=("FOT-RodinNTLG Pro DB", 12), width=5)
         name_entry.grid(row=2, column=0, pady=(0, 10))
 
@@ -323,21 +322,21 @@ class Application(tk.Tk):
             self.update_high_score_list(name, self.score_time)
             self.display_high_scores()
 
-        # Bind the enter key to submit the name
+       
         self.current_page.bind('<Return>', lambda event=None: submit_name())
 
-        # Create a button to submit the name
+   
         submit_button = tk.Button(self.scoreboard_frame, text="Submit", command=submit_name, font=("FOT-RodinNTLG Pro DB", 12), bg="lightgreen")
         submit_button.grid(row=3, column=0, pady=(0, 10))
 
     def update_high_score_list(self, name, score_time):
-        # Add the new score to the high score list
+  
         self.high_score_list.append((name, score_time, self.number_of_questions))
-        # Sort the list by the score in ascending order
+    
         self.high_score_list.sort(key=lambda x: x[1])
-        # Keep only the top 5 scores
+   
         self.high_score_list = self.high_score_list[:5]
-        # Save the updated high score list
+  
         self.save_high_scores()
 
     def load_high_scores(self):
@@ -353,24 +352,21 @@ class Application(tk.Tk):
             pickle.dump(self.high_score_list, file)
 
     def display_high_scores(self):
-        # Destroy the current scoreboard frame
         if self.current_page:
             self.current_page.destroy()
 
-        # Create a new frame for the updated scoreboard
+        
         self.current_page = tk.Frame(self, width=600, height=900, background="white")
         self.current_page.pack(padx=10, pady=100)
 
 
-        # Display "Results" in a big black label
         results_label = tk.Label(self.current_page, text="Results", font=("FOT-RodinNTLG Pro DB", 36, "bold"), fg="black", bg="white")
         results_label.grid(row=0, column=0, columnspan=5, pady=(120, 50)) 
 
-        # Display "Scoreboard" above the frame
+      
         scoreboard_title_label = tk.Label(self.current_page, text="Scoreboard", font=("FOT-RodinNTLG Pro DB", 16, "bold"), bg="white")
         scoreboard_title_label.grid(row=1, column=0, columnspan=5, pady=(10, 20))
 
-        # Display the updated high score list in the frame
         for i, (name, score_time) in enumerate(self.high_score_list):
             score_label = tk.Label(self.current_page, text=f"{i + 1}. {name}: {score_time} seconds", font=("FOT-RodinNTLG Pro DB", 12), bg="white")
             score_label.grid(row=i + 1, column=0, pady=(0, 5))
@@ -419,12 +415,12 @@ class Application(tk.Tk):
                 return "lightblue"
 
     def get_alphabet_button(self, letter):
-        # Find the button corresponding to the given letter
+        
         for widget in self.current_page.winfo_children():
             if isinstance(widget, tk.Button) and widget.cget("text") == letter:
                 return widget
 
-        # If the button is not found, create a new button with the letter
+      
         new_button = tk.Button(self.current_page, text=letter, bg="lightblue", command=lambda l=letter: self.show_practice_page(l), font=("FOT-RodinNTLG Pro DB", 16))
         return new_button
 
@@ -470,22 +466,21 @@ class Application(tk.Tk):
 
 
     def update_classification_count_on_page(self, letter):
-        # Periodically check for updates and update the label on the practice page
+        
         current_count = self.classification_count[letter]
 
-        # Update StringVar with the current classification count
+       
         self.classification_count_var.set(current_count)
 
-        # Check if the count has reached 20 and show the success message
+       
         if self.selected_letter == letter and current_count >= 20:
             self.show_success_message(letter)
 
-        # Schedule the next update after a delay (e.g., 1000 milliseconds)
+       
         self.after(1000, self.update_classification_count_on_page, letter)
         
 
     def show_success_message(self, letter):
-        print("in success message")
         if self.on_practice_page:
             success_label = tk.Label(self.current_page, text=f"Successfully learned {letter}!", font=("FOT-RodinNTLG Pro DB", 12, "bold"), fg="green", bg="white")
             success_label.grid(row=3, column=0, columnspan=5, pady=(0, 0), sticky="ns")
@@ -529,9 +524,7 @@ class Application(tk.Tk):
                     self.y_.append(y)
             self.x1, self.y1, self.x2, self.y2 = find_hand_rectangle(self.x_, self.y_, self.H, self.W)
             classified_letter = classify_letter(self.model, data_aux, self.classifications_list)
-            #print(str(classified_letter))
-            #print(letter)
-            #print(self.classifications_list)
+
             self.correct_sign = self.is_sign_correct(letter, classified_letter)
 
         else:
@@ -539,7 +532,7 @@ class Application(tk.Tk):
             self.x1, self.y1, self.x2, self.y2 = (None, None, None, None)
          
         if self.correct_sign:
-            # Trigger the response based on the current page
+          
             if self.on_practice_page:
                 self.classification_count[letter] += 1
                 button_color = self.get_button_color(letter)
@@ -548,17 +541,16 @@ class Application(tk.Tk):
                 self.after(25, self.classify_sign, letter)
             elif self.on_test_page:
                 print("Classify_sign: Correct, going to next question.")
-                # Trigger the same response as the "Next question" button for the test page
+                
                 self.show_next_question()
         
         elif self.on_practice_page or self.on_test_page:
-            # Continue classifying if the sign is incorrect
-            self.after(25, self.classify_sign, letter) #25ms, now looks at every other page
+            
+            self.after(25, self.classify_sign, letter)
             
 
     def is_sign_correct(self, selected_letter, signed_letter):
-        """print("selected:" + str(selected_letter))
-        print("classified:" + str(signed_letter))"""
+
 
         if selected_letter == signed_letter:
             return True
